@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import toast from 'react-hot-toast';
+import { HiSearch } from 'react-icons/hi';
+import { SearchForm, Input, SearchButton } from './Searchbar.styled';
 
 export class Searchbar extends Component {
   state = {
@@ -21,23 +23,20 @@ export class Searchbar extends Component {
 
   render() {
     return (
-      <header>
-        <form onSubmit={this.handleSubmit} className="Searchbar">
-          <button type="submit" className="Searchbar-button">
-            <span className="Searchbar-button-label">Search</span>
-          </button>
-          <input
-            name="search"
-            className="Searchbar-input"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.query}
-            onChange={this.handleChange}
-          />
-        </form>
-      </header>
+      <SearchForm onSubmit={this.handleSubmit}>
+        <SearchButton type="submit">
+          <HiSearch size={20} />
+        </SearchButton>
+        <Input
+          name="search"
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={this.state.query}
+          onChange={this.handleChange}
+        />
+      </SearchForm>
     );
   }
 }

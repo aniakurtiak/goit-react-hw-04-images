@@ -7,6 +7,8 @@ import { Searchbar } from './Searchbar/Searchbar';
 import React from 'react';
 import { fetchImages } from 'services/api';
 import toast, { Toaster } from 'react-hot-toast';
+import { GlobalStyle } from './GlobalStyle';
+import { Layout } from './Layout.styled';
 
 export class App extends Component {
   state = {
@@ -17,7 +19,6 @@ export class App extends Component {
     modalIsOpen: false,
     isLoading: false,
     selectedImage: null,
-    // error: false,
   };
 
   handleSubmit = evt => {
@@ -26,25 +27,6 @@ export class App extends Component {
       query: `${Date.now()}/${evt.target.elements.search.value.toLowerCase()}`,
       images: [],
       page: 1,
-    });
-  };
-
-  handleImageClick = evt => {
-    const selectedImage = this.state.images.find(
-      img => img.webformatURL === evt.target.src
-    );
-
-    if (selectedImage) {
-      this.setState({
-        selectedImage: selectedImage.largeImageURL,
-        modalIsOpen: true,
-      });
-    }
-  };
-
-  closeModal = () => {
-    this.setState({
-      modalIsOpen: false,
     });
   };
 
@@ -59,20 +41,13 @@ export class App extends Component {
         });
         const imgs = await fetchImages(this.state.query, this.state.page);
         if (imgs.hits.length === 0) {
-          toast.error('Your search did not match anything!');
+          toast.error('No images were found for your request!');
           return;
         }
         this.setState(prevState => ({
           images: [...prevState.images, ...imgs.hits],
           maxPages: Math.round(imgs.totalHits / 12),
         }));
-        if (prevState.page === this.state.page) {
-          toast.success(`You have ${imgs.totalHits} images`);
-        }
-        window.scrollBy({
-          top: 520,
-          behavior: 'smooth',
-        });
       } catch (error) {
         toast.error('Oops! Something went wrong!');
       } finally {
@@ -87,12 +62,30 @@ export class App extends Component {
     }));
   };
 
+  handleImageClick = evt => {
+    const selectedImage = this.state.images.find(
+      img => img.webformatURL === evt.target.src
+    );
+    if (selectedImage) {
+      this.setState({
+        selectedImage: selectedImage.largeImageURL,
+        modalIsOpen: true,
+      });
+    }
+  };
+
+  closeModal = () => {
+    this.setState({
+      modalIsOpen: false,
+    });
+  };
+
   render() {
     const { isLoading, images, selectedImage, maxPages, page, modalIsOpen } =
       this.state;
 
     return (
-      <div>
+      <Layout>
         <Searchbar onSubmit={this.handleSubmit} />
         {images.length > 0 && (
           <ImageGallery onImageClick={this.handleImageClick} images={images} />
@@ -110,7 +103,8 @@ export class App extends Component {
           <button onClick={this.closeModal}>Close</button>
         </CustomModal>
         <Toaster />
-      </div>
+        <GlobalStyle />
+      </Layout>
     );
   }
 }

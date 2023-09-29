@@ -1,10 +1,12 @@
+import { ImageItem } from './ImageGalleryItem.styled';
+
 export const ImageGalleryItem = ({
   image: { tags, webformatURL },
   onImageClick,
 }) => {
   return (
     <div>
-      <img
+      <ImageItem
         loading="lazy"
         src={webformatURL}
         alt={tags}

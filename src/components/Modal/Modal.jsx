@@ -1,4 +1,5 @@
 import Modal from 'react-modal';
+import { HiOutlineX } from 'react-icons/hi';
 
 Modal.setAppElement('#root');
 const customStyles = {
@@ -22,7 +23,7 @@ export const CustomModal = ({ isOpen, onRequestClose, selectedImage }) => {
     >
       <div>
         <button onClick={onRequestClose} style={{ float: 'right' }}>
-          Close
+          <HiOutlineX />
         </button>
       </div>
       <div>
