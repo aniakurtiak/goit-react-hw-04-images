@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
+import toast from 'react-hot-toast';
 
 export class Searchbar extends Component {
   state = {
     query: '',
   };
 
-  handleChange = event => {
-    this.setState({ query: event.target.value });
+  handleChange = evt => {
+    this.setState({ query: evt.target.value });
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: '' });
+  handleSubmit = evt => {
+    evt.preventDefault();
+    if (evt.target.elements.search.value === '') {
+      toast.error('Gotta write something!');
+      return;
+    }
+    this.props.onSubmit(evt);
   };
 
   render() {
@@ -23,6 +27,7 @@ export class Searchbar extends Component {
             <span className="Searchbar-button-label">Search</span>
           </button>
           <input
+            name="search"
             className="Searchbar-input"
             type="text"
             autoComplete="off"

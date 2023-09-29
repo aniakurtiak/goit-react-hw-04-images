@@ -13,50 +13,27 @@ export class App extends Component {
     query: '',
     images: [],
     page: 1,
+    maxPages: 0,
     modalIsOpen: false,
     isLoading: false,
     selectedImage: null,
     // error: false,
   };
 
-  async componentDidMount() {
-    try {
-      this.setState({
-        isLoading: true,
-      });
-      const images = await fetchImages();
-      this.setState({
-        images,
-      });
-      console.log(images);
-    } catch (error) {
-      this.setState({
-        error: true,
-      });
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  }
-
   handleSubmit = evt => {
     evt.preventDefault();
     this.setState({
-      query: `${Date.now()}/${evt.tareget.elements.query.value}`,
+      query: `${Date.now()}/${evt.target.elements.search.value.toLowerCase()}`,
       images: [],
       page: 1,
     });
-  };
-
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
   };
 
   handleImageClick = evt => {
     const selectedImage = this.state.images.find(
       img => img.webformatURL === evt.target.src
     );
+
     if (selectedImage) {
       this.setState({
         selectedImage: selectedImage.largeImageURL,
@@ -67,7 +44,7 @@ export class App extends Component {
 
   closeModal = () => {
     this.setState({
-      setIsOpen: false,
+      modalIsOpen: false,
     });
   };
 
@@ -79,39 +56,55 @@ export class App extends Component {
       try {
         this.setState({
           isLoading: true,
-          error: false,
         });
-        const images = await fetchImages(this.state.query);
-        if (images.hits.length === 0) {
+        const imgs = await fetchImages(this.state.query, this.state.page);
+        if (imgs.hits.length === 0) {
           toast.error('Your search did not match anything!');
           return;
         }
         this.setState(prevState => ({
-          images: [...prevState.images, ...images.hits],
+          images: [...prevState.images, ...imgs.hits],
+          maxPages: Math.round(imgs.totalHits / 12),
         }));
+        if (prevState.page === this.state.page) {
+          toast.success(`You have ${imgs.totalHits} images`);
+        }
+        window.scrollBy({
+          top: 520,
+          behavior: 'smooth',
+        });
       } catch (error) {
         toast.error('Oops! Something went wrong!');
       } finally {
-        this.setState({ loading: false });
+        this.setState({ isLoading: false });
       }
     }
   }
 
+  handleLoadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
   render() {
-    const { isLoading, images, selectedImage, error } = this.state;
+    const { isLoading, images, selectedImage, maxPages, page, modalIsOpen } =
+      this.state;
 
     return (
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
-        {isLoading && <Loader />}
-        {error && !isLoading && <div>Oops! There was an Error!</div>}
         {images.length > 0 && (
           <ImageGallery onImageClick={this.handleImageClick} images={images} />
         )}
-        <Button onLoadMore={this.handleLoadMore} />
+        {isLoading && <Loader />}
+        {maxPages > 0 && images.length > 0 && page !== maxPages && (
+          <Button onLoadMore={this.handleLoadMore} />
+        )}
         <CustomModal
-          isOpen={this.state.modalIsOpen}
+          isOpen={modalIsOpen}
           onRequestClose={this.closeModal}
+          selectedImage={selectedImage}
         >
           {selectedImage && <img src={selectedImage} alt="Selected" />}
           <button onClick={this.closeModal}>Close</button>

@@ -4,7 +4,9 @@ export const ImageGallery = ({ onImageClick, images }) => {
   return (
     <ul>
       {images.map(image => (
-        <ImageGalleryItem onImageClick={onImageClick} />
+        <li key={image.id}>
+          <ImageGalleryItem onImageClick={onImageClick} image={image} />
+        </li>
       ))}
     </ul>
   );

@@ -31,5 +31,3 @@ export const CustomModal = ({ isOpen, onRequestClose, selectedImage }) => {
     </Modal>
   );
 };
-
-export default CustomModal;
