@@ -27,7 +27,7 @@ export const App = () => {
   };
 
   useEffect(() => {
-    if (query !== '' && page === 1) {
+    if (query !== '') {
       async function getImages() {
         try {
           setIsLoading(true);
@@ -49,6 +49,7 @@ export const App = () => {
   }, [query, page]);
 
   const handleLoadMore = () => {
+    console.log('LoadMore button clicked');
     setPage(prevPage => prevPage + 1);
   };
 
